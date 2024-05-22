@@ -2,7 +2,7 @@ import reflex as rx
 from reflex.style import toggle_color_mode
 from Journal.styles import auth_pages_stylesheet
 from Journal.components.input_field import render_input_field
-from Journal.states import State, RegisterState
+from Journal.states import State, RegisterState, Registration
 from Journal.components.button import render_submit_button
 
 @rx.page(route="/register")
@@ -19,6 +19,12 @@ def register() -> rx.Component:
         rx.text("Create an account to get started."),
         rx.divider(width="15%"),
         render_input_field(
+            title="Username",
+            is_password=False,
+            value=RegisterState.username,
+            update=RegisterState.update_username
+            ),
+        render_input_field(
             title="Email",
             is_password=False,
             value=RegisterState.email,
@@ -32,7 +38,7 @@ def register() -> rx.Component:
             ),
         render_submit_button(
             name="Create Account!",
-            event=State.void_event
+            event=Registration.user_registration
         ),
         *[rx.spacer() for _ in range(1)],
         rx.text(

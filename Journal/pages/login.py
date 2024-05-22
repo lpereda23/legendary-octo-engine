@@ -2,7 +2,7 @@ import reflex as rx
 from reflex.style import toggle_color_mode
 from Journal.styles import auth_pages_stylesheet
 from Journal.components.input_field import render_input_field
-from Journal.states import State, LoginState
+from Journal.states import State, LoginState, Authentication
 from Journal.components.button import render_submit_button
 
 @rx.page(route="/")
@@ -32,7 +32,7 @@ def login() -> rx.Component:
             ),
         render_submit_button(
             name="Login!",
-            event=State.void_event
+            event=Authentication.user_login
         ),
         *[rx.spacer() for _ in range(2)],
         rx.text(
