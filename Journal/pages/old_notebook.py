@@ -175,67 +175,72 @@ def render_comments(item):
         _light={"border_left":"1px solid black"}
     )
 
-def render_post_header(time: str, username: str):
-    return rx.hstack(
-        reusable_meta_data_component(
-            _tag="at_sign", _label="Username", _name=username,
-            fn=Comments.void_event
-        ),
-        reusable_meta_data_component(
-            _tag="clock", _label="Created On", _name=time,
-            fn=Comments.void_event
-        ),
-        spacing="2",
+def render_post_header(item: str):
+    return rx.chakra.accordion_button(
+        rx.heading(item, size="2", text_align="start"),
+        rx.spacer(),
+        rx.chakra.accordion_icon()
     )
 
-def render_post_content(intention: str,
-                        success: str,
-                        lesson: str, grateful: str):
+def render_post_content(data: str):
     """
         Render content of the post
     """
     return [
-        rx.card(
-            rx.flex(
-                rx.box(
-                    rx.heading("Intention(s):"),
-                    rx.text(intention)
-                )
-            ),
-            rx.flex(
-                rx.box(
-                    rx.heading("Success(es):"),
-                    rx.text(success)
-                )
-            ),
-            rx.flex(
-                rx.box(
-                    rx.heading("Lesson(s):"),
-                    rx.text(lesson)
-                )
-            ),
-            rx.flex(
-                rx.box(
-                    rx.heading("Grateful:"),
-                    rx.text(grateful)
-                )
-            ),
-         spacing="3",
-        )
+        rx.text(
+            data,
+            text_align="start",
+            font_size={"13px","13px","14px","15px","15px",},
+            transition="all 550ms ease",
+        ),
+        rx.box(rx.divider(opacity="0"), padding="1em 0em")
     ]
 
 def render_item(item: CustomPost):
-    return rx.flex(
-        rx.vstack(
-            render_post_header(
-                item.created_at,
-                item.username
+    return rx.chakra.accordion(
+        rx.chakra.accordion_item(
+            render_post_header(item.title),
+            rx.chakra.accordion_panel(
+                # * unpacks list of components
+                *render_post_content(item.content),
+                *render_post_comment_form(item),
+                rx.hstack(
+                    render_post_metadata(
+                        item.created_at,
+                        item.username,
+                        item
+                    ),
+                    width="100%",
+                    display="flex",
+                    justify="end",
+                    align="center"
+                ),
+                rx.divider(height="2", opacity="0"),
+                rx.vstack(
+                    # This iterator renders the comments
+                    rx.foreach(
+                        # NOTE: item.comments is a list[dict]
+                        iterable=item.comments,
+                        render_fn=render_comments
+                    ),
+                    width="100%",
+                    display="flex",
+                    justify="center",
+                    align="center",
+                    spacing="1"
+                ),
             ),
-            *render_post_content(
-                item.intention, item.success,
-                item.lesson, item.grateful
-            )
-        )
+            padding="0.25em 0em",
+            margin="0",
+            overflow="hidden",
+            border="1px 0px 1px 0px solid gray"
+        ),
+        width=["100%", "100%", "80%", "65%", "60%"],
+        allow_multiple=True,
+        padding="0.65rem 0rem",
+        overflow="hidden",
+        reduce_motion=True,
+        transition="all 550ms ease"
     )
 
 @rx.page("/notebook", on_load=JournalData.on_notebook_landing_event)

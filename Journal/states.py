@@ -149,6 +149,7 @@ class Comments(Authentication):
         _post: dict = await self.set_comment_visibility_to_flex(post)
         self.update_posts_with_comment_visibility(_post)
 
+#TODO: PostDATA
     async def commit_comment_to_post(self, post: CustomPost):
         data = {
             "user_id": self.user_id,
@@ -170,22 +171,42 @@ class Comments(Authentication):
             return rx.redirect("/notebook")
 
 class Post(Authentication):
-    post_title: str
-    post_body: str
+    post_intention: str
+    post_success: str
+    post_lesson: str
+    post_grateful: str
+    post_lesson_score: int = 0
+    post_success_score: int = 0
+
 
     is_open: bool = False
 
     async def clear_post_entries(self):
-        self.post_title, self.post_body = "", ""
+        self.post_intention, self.post_success = "", ""
+        self.post_lesson, self.post_grateful = "", ""
+        self.post_lesson_score, self.post_success_score = 0, 0
 
     def toggle_post_form(self):
         self.is_open = not (self.is_open)
 
-    def update_post_title(self, post_title):
-        self.post_title = post_title
+    def update_post_intention(self, post_intention):
+        self.post_intention = post_intention
 
-    def update_post_body(self, post_body):
-        self.post_body = post_body
+    def update_post_success(self, post_success):
+        self.post_success = post_success
+
+    def update_post_lesson(self, post_lesson):
+        self.post_lesson = post_lesson
+
+    def update_post_grateful(self, post_grateful):
+        self.post_grateful = post_grateful
+
+    def update_post_lesson_score(self, post_lesson_score):
+        self.post_lesson_score = post_lesson_score
+
+    def update_post_success_score(self, post_success_score):
+        self.post_success_score = post_success_score
+
 
     # method to insert post to supabase DB
     async def submit_post_for_validation(self):
@@ -194,8 +215,12 @@ class Post(Authentication):
             response = await insert_post_to_database(
                 access_token=self.access_token,
                 user_id=self.user_id,
-                post_title=self.post_title,
-                post_body=self.post_body
+                post_intention=self.post_intention,
+                post_success=self.post_success,
+                post_lesson=self.post_lesson,
+                post_grateful=self.post_grateful,
+                post_lesson_score=self.post_lesson_score,
+                post_success_score=self.post_success_score,
             )
 
             if response == 200 or response == 201:

@@ -59,7 +59,6 @@ async def user_logout_endpoint(access_token: str):
         # print(response)
         return response.status_code
 
-
 # second API endpoint: user registration
 async def username_registration_endpoint(user_id: str, username: str):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/users"
@@ -185,8 +184,14 @@ async def get_posts_endpoint(access_token: str, username_list: str):
             CustomPost(
                 id=post["post_id"],
                 user_id=post["user_id"],
-                title=post["title"],
-                content=post["content"],
+
+                intention=post["intention"],
+                success=post["success"],
+                lesson=post["lesson"],
+                grateful=post["grateful"],
+                lesson_score=post["lesson_score"],
+                grateful_score=post["grateful_score"],
+
                 created_at=post["created_at"],
                 username=next(
                     (
@@ -205,7 +210,6 @@ async def get_posts_endpoint(access_token: str, username_list: str):
 async def get_comments_for_post(
     access_token: str, post_id: str, username_list: list[dict]
 ):
-    #TODO:Change to correct url for comments table
     url = f"https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/comments?&select=*&post_id=eq.{post_id}"
 
     headers = {
@@ -260,7 +264,10 @@ async def get_posts_with_comments_api(
 
 # API endpoint to push the post to supabase
 async def insert_post_to_database(
-    access_token: str, user_id: str, post_title: str, post_body: str
+    access_token: str, user_id: str,
+    post_intention: str, post_success: str,
+    post_lesson: str, post_grateful: str,
+    post_lesson_score: int, post_success_score: int
 ):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts"
 
@@ -273,9 +280,14 @@ async def insert_post_to_database(
 
     data = {
             "user_id": user_id,
-            "title": post_title,
-            "content": post_body
+            "post_intention": post_intention,
+            "post_success": post_success,
+            "post_lesson": post_lesson,
+            "post_grateful": post_grateful,
+            "post_lesson_score": post_lesson_score,
+            "post_success_score": post_success_score,
     }
+
 
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=data)
