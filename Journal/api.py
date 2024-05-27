@@ -42,6 +42,24 @@ async def user_login_endpoint(email: str, password: str) -> None:
 
         return access_token, expires_in, user_id, user_email
 
+# API endpoint to log out user
+async def user_logout_endpoint(access_token: str):
+
+    url = "https://mddgckpnxesyhhwpaydc.supabase.co/auth/v1/logout"
+
+    headers = {
+        "apikey": PUBLIC_KEY,
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url=url, headers=headers)
+        # print(response.status_code)
+        # print(response)
+        return response.status_code
+
+
 # second API endpoint: user registration
 async def username_registration_endpoint(user_id: str, username: str):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/users"
@@ -239,3 +257,44 @@ async def get_posts_with_comments_api(
         post.comments = comments
     print(f"Return of posts--> {posts}")
     return posts
+
+# API endpoint to push the post to supabase
+async def insert_post_to_database(
+    access_token: str, user_id: str, post_title: str, post_body: str
+):
+    url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts"
+
+    headers = {
+        "apikey": PUBLIC_KEY,
+        "Authorization": f"Bearer {PUBLIC_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+    }
+
+    data = {
+            "user_id": user_id,
+            "title": post_title,
+            "content": post_body
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, json=data)
+        return response.status_code
+
+# API endpoint to insert COMMENT to database
+async def insert_comment_to_database(access_token: str, comment: dict):
+    url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/comments"
+
+    print(comment)
+
+    headers = {
+        "apikey": PUBLIC_KEY,
+        "Authorization": f"Bearer {PUBLIC_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url=url,headers=headers, json=comment)
+        print(response)
+        return response.status_code
