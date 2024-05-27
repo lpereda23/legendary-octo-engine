@@ -1,0 +1,77 @@
+
+def render_post_form():
+    return rx.chakra.modal(
+        rx.chakra.modal_overlay(
+            rx.chakra.modal_content(
+                rx.chakra.modal_header("Submit Post"),
+                rx.chakra.modal_body(
+                    rx.input(
+                        placeholder="Post Title",
+                        margin="0.5rem 0rem",
+                        value=Post.post_title,
+                        on_change=Post.update_post_title
+                    ),
+                    rx.spacer(),
+                    rx.input(
+                        placeholder="Intention(s):",
+                        margin="0.5rem 0rem",
+                        # value=Post.post_body,
+                        # on_change=Post.update_post_body
+                    ),
+                    rx.spacer(),
+                    rx.input(
+                        placeholder="Success(es):",
+                        margin="0.5rem 0rem",
+                        # value=Post.post_body,
+                        # on_change=Post.update_post_body
+                    ),
+                    rx.spacer(),
+                    rx.input(
+                        placeholder="Lesson(s):",
+                        margin="0.5rem 0rem",
+                        # value=Post.post_body,
+                        # on_change=Post.update_post_body
+                    ),
+                    rx.spacer(),
+                    rx.input(
+                        placeholder="Grateful for:",
+                        margin="0.5rem 0rem",
+                        # value=Post.post_body,
+                        # on_change=Post.update_post_body
+                    ),
+                    rx.spacer(),
+                    padding="0.25rem 1rem"
+                ),
+                rx.vstack(
+                        rx.heading(
+                            f"Lessons Score: {SliderVariationStateLessons.value}"
+                        ),
+                        rx.slider(
+                            on_change=SliderVariationStateLessons.set_end,
+                            default_value=0
+                        ),
+                        rx.spacer(),
+                        rx.heading(
+                            f"Successes Score: {SliderVariationStateSuccess.value}"
+                        ),
+                        rx.slider(
+                            on_change=SliderVariationStateSuccess.set_end,
+                            default_value=0
+                            ),
+                ),
+                rx.chakra.modal_footer(
+                    rx.hstack(
+                        rx.chakra.button(
+                            "Close",
+                            on_click=Post.toggle_post_form
+                        ),
+                        rx.chakra.button(
+                            "Submit",
+                            on_click=Post.submit_post_for_validation
+                        )
+                    )
+                )
+            )
+        ),
+        is_open=Post.is_open
+    )

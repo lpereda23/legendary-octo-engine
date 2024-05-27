@@ -16,8 +16,12 @@ class Comment(rx.Base):
 class CustomPost(rx.Base):
     id: str # THE KEYS MUST MATCH THE KEYS INSIDE SUPABASE TABLES
     user_id: str
-    title: str
-    content: str
+    intention: str
+    success: str
+    lesson: str
+    grateful: str
+    lesson_score: int
+    grateful_score: int
     created_at: str
     comments: List[Comment]
     username: str
