@@ -21,7 +21,7 @@ class CustomPost(rx.Base):
     lesson: str
     grateful: str
     lesson_score: int
-    grateful_score: int
+    success_score: int
     created_at: str
     comments: List[Comment]
     username: str

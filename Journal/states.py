@@ -202,10 +202,10 @@ class Post(Authentication):
         self.post_grateful = post_grateful
 
     def update_post_lesson_score(self, post_lesson_score):
-        self.post_lesson_score = post_lesson_score
+        self.post_lesson_score = post_lesson_score[0]
 
     def update_post_success_score(self, post_success_score):
-        self.post_success_score = post_success_score
+        self.post_success_score = post_success_score[0]
 
 
     # method to insert post to supabase DB
