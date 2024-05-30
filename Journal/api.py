@@ -259,7 +259,7 @@ async def get_posts_with_comments_api(
         )
         # set the post comments list to the newly updated list
         post.comments = comments
-    print(f"Return of posts--> {posts}")
+    # print(f"Return of posts--> {posts}")
     return posts
 
 # API endpoint to push the post to supabase
@@ -288,10 +288,10 @@ async def insert_post_to_database(
             "success_score": post_success_score,
     }
 
-    print(data, end='\n')
+    # print(data, end='\n')
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=data)
-        print(response)
+        # print(response)
         return response.status_code
 
 # API endpoint to insert COMMENT to database

@@ -16,10 +16,10 @@ def navbar():
     return rx.hstack(
         rx.hstack(
             # rx.image(src="/favicon.ico", width="2em"),
-            rx.heading("Evening Journal", font_size="2em"),
+            rx.heading("Evening Journal", font_size="2em",),
         ),
         rx.spacer(),
-        rx.button(rx.icon("sun-moon"), on_click=toggle_color_mode, variant="ghost", size="2"),
+        # rx.button(rx.icon("sun-moon"), on_click=toggle_color_mode, variant="ghost", size="2"),
         rx.menu.root(
             rx.menu.trigger(
                 rx.button("Menu"),
@@ -37,7 +37,7 @@ def navbar():
         ),
         position="fixed",
         top="0px",
-        background_color="lightgray",
+        background_color="#7dafbf",
         padding="1em",
         height="4em",
         width="100%",
@@ -117,14 +117,14 @@ def reusable_meta_data_component(_tag: str, _label: str, _name : str, fn: callab
 # Next is to render the POST METADATA, similar to the method above
 def render_post_metadata(time: str, username: str, item: CustomPost):
     return rx.hstack(
-        reusable_meta_data_component(
-            _tag="at_sign", _label="Username", _name=username,
-            fn=Comments.void_event
-        ),
-        reusable_meta_data_component(
-            _tag="clock", _label="Created On", _name=time,
-            fn=Comments.void_event
-        ),
+        # reusable_meta_data_component(
+        #     _tag="at_sign", _label="Username", _name=username,
+        #     fn=Comments.void_event
+        # ),
+        # reusable_meta_data_component(
+        #     _tag="clock", _label="Created On", _name=time,
+        #     fn=Comments.void_event
+        # ),
         rx.cond(
             condition=item.is_comment_visible == "none",
             c1=reusable_meta_data_component(
@@ -141,6 +141,7 @@ def render_post_metadata(time: str, username: str, item: CustomPost):
             ),
         ),
         spacing="2",
+        justify="end"
     )
 
 # Finally have the component that renders the comments by other users
@@ -236,24 +237,48 @@ def render_item(item: CustomPost):
                     item.intention, item.success,
                     item.lesson, item.grateful
                 ),
+                *render_post_comment_form(item),
+                rx.hstack(
+                    render_post_metadata(
+                        item.created_at,
+                        item.username,
+                        item
+                    ),
+                    width="100%",
+                    display="flex",
+                    justify="end",
+                    align="center"
+                ),
+                rx.divider(height="2", opacity="1"),
+                rx.vstack(
+                    rx.foreach(
+                        iterable=item.comments,
+                        render_fn=render_comments
+                    ),
+                    width="100%",
+                    display="flex",
+                    justify="center",
+                    align="center",
+                    spacing="1"
+                )
             ),
             spacing='3'
         ),
         border_radius="15px",
         background_color="#f2f2f2",
         # box_shadow="0px 0px 3px 2px #132a3e",
-        justify="start",
+        justify="center",
         align="center",
         width="100%"
     )
 
 @rx.page("/notebook", on_load=JournalData.on_notebook_landing_event)
 def notebook():
-    return rx.vstack(
+    return rx.stack(
         #post form goes here
         render_post_form(),
         navbar(),
-        rx.vstack(
+        rx.stack(
             rx.foreach(
                     JournalData.posts,
                     render_fn=render_item
@@ -264,6 +289,8 @@ def notebook():
             padding_top="5rem",
             padding_left="1rem",
             padding_right="1rem",
+            padding_bottom="5rem",
+            direction="column-reverse",
             # padding="5rem 2rem",
             overflow="auto",
             transition="all 550ms ease",
@@ -271,4 +298,5 @@ def notebook():
         rx.spacer(),
         align="center",
         width="100%",
+        direction="column-reverse",
     )

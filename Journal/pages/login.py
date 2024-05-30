@@ -8,11 +8,11 @@ from Journal.components.button import render_submit_button
 @rx.page(route="/")
 def login() -> rx.Component:
     return rx.vstack(
-        rx.hstack(
-            rx.button(rx.icon("moon"), on_click=toggle_color_mode),
-            width="100%",
-            justify_content="end",
-        ),
+        # rx.hstack(
+        #     rx.button(rx.icon("moon"), on_click=toggle_color_mode),
+        #     width="100%",
+        #     justify_content="end",
+        # ),
         rx.spacer(),
         rx.heading("Welcome Back!", size="8",
                    transition="all 550ms ease"),
