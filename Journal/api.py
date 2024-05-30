@@ -190,7 +190,7 @@ async def get_posts_endpoint(access_token: str, username_list: str):
                 lesson=post["lesson"],
                 grateful=post["grateful"],
                 lesson_score=post["lesson_score"],
-                grateful_score=post["grateful_score"],
+                success_score=post["success_score"],
 
                 created_at=post["created_at"],
                 username=next(
@@ -280,17 +280,18 @@ async def insert_post_to_database(
 
     data = {
             "user_id": user_id,
-            "post_intention": post_intention,
-            "post_success": post_success,
-            "post_lesson": post_lesson,
-            "post_grateful": post_grateful,
-            "post_lesson_score": post_lesson_score,
-            "post_success_score": post_success_score,
+            "intention": post_intention,
+            "success": post_success,
+            "lesson": post_lesson,
+            "grateful": post_grateful,
+            "lesson_score": post_lesson_score,
+            "success_score": post_success_score,
     }
 
-
+    print(data, end='\n')
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=data)
+        print(response)
         return response.status_code
 
 # API endpoint to insert COMMENT to database

@@ -185,7 +185,8 @@ def render_post_header(time: str, username: str):
             _tag="clock", _label="Created On", _name=time,
             fn=Comments.void_event
         ),
-        spacing="2",
+        spacing="4",
+        padding="4px",
     )
 
 def render_post_content(intention: str,
@@ -195,47 +196,55 @@ def render_post_content(intention: str,
         Render content of the post
     """
     return [
-        rx.card(
-            rx.flex(
+            rx.vstack(
                 rx.box(
-                    rx.heading("Intention(s):"),
-                    rx.text(intention)
-                )
-            ),
-            rx.flex(
+                    rx.heading("Intention(s):", size="2", weight="light"),
+                    rx.text(intention),
+                    width="100%",
+                    padding="7px"
+                ),
                 rx.box(
-                    rx.heading("Success(es):"),
-                    rx.text(success)
-                )
-            ),
-            rx.flex(
+                    rx.heading("Success(es):", size="2", weight="light"),
+                    rx.text(success),
+                    width="100%",
+                    padding="7px"
+                ),
                 rx.box(
-                    rx.heading("Lesson(s):"),
-                    rx.text(lesson)
-                )
-            ),
-            rx.flex(
+                    rx.heading("Lesson(s):", size="2", weight="light"),
+                    rx.text(lesson),
+                    width="100%",
+                    padding="7px"
+                ),
                 rx.box(
-                    rx.heading("Grateful:"),
-                    rx.text(grateful)
-                )
-            ),
-         spacing="3",
+                    rx.heading("Grateful:", size="2", weight="light"),
+                    rx.text(grateful),
+                    width="100%",
+                    padding="7px"
+                ),
         )
     ]
 
 def render_item(item: CustomPost):
     return rx.flex(
         rx.vstack(
-            render_post_header(
-                item.created_at,
-                item.username
+            rx.box(
+                render_post_header(
+                    item.created_at,
+                    item.username
+                ),
+                *render_post_content(
+                    item.intention, item.success,
+                    item.lesson, item.grateful
+                ),
             ),
-            *render_post_content(
-                item.intention, item.success,
-                item.lesson, item.grateful
-            )
-        )
+            spacing='3'
+        ),
+        border_radius="15px",
+        background_color="#f2f2f2",
+        # box_shadow="0px 0px 3px 2px #132a3e",
+        justify="start",
+        align="center",
+        width="100%"
     )
 
 @rx.page("/notebook", on_load=JournalData.on_notebook_landing_event)
@@ -252,10 +261,14 @@ def notebook():
 
             width="100%",
             align="center",
-            padding="5rem 1rem",
+            padding_top="5rem",
+            padding_left="1rem",
+            padding_right="1rem",
+            # padding="5rem 2rem",
             overflow="auto",
-            transition="all 550ms ease"
+            transition="all 550ms ease",
         ),
         rx.spacer(),
+        align="center",
         width="100%",
     )
