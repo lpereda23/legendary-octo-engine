@@ -171,7 +171,7 @@ async def get_posts_endpoint(access_token: str, username_list: str):
 
     headers = {
         "apikey": PUBLIC_KEY,
-        "Authorization": f"Bearer {PUBLIC_KEY}"
+        "Authorization": f"Bearer {access_token}"
     }
 
     async with httpx.AsyncClient() as client:
@@ -273,7 +273,7 @@ async def insert_post_to_database(
 
     headers = {
         "apikey": PUBLIC_KEY,
-        "Authorization": f"Bearer {PUBLIC_KEY}",
+        "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json",
         "Prefer": "return=minimal"
     }
@@ -302,7 +302,7 @@ async def insert_comment_to_database(access_token: str, comment: dict):
 
     headers = {
         "apikey": PUBLIC_KEY,
-        "Authorization": f"Bearer {PUBLIC_KEY}",
+        "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json",
         "Prefer": "return=minimal"
     }
