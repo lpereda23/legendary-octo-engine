@@ -25,15 +25,15 @@ async def user_login_endpoint(email: str, password: str) -> None:
         "email": email,
         "password": password
     }
-
+    # print(f"This is the 'headers' {headers}",end='\n')
     # send request...
     async with httpx.AsyncClient() as client:
         response = await client.post(
             url, headers=headers, json=data
         )
-
+        # print(f"This is data print ----- {data}", end='\n')
         data = response.json()
-        #print(data)
+        print(f"This is data print ----- {data}", end='\n')
         # get the data we need
         access_token = data["access_token"]
         expires_in = data["expires_in"]

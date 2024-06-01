@@ -16,13 +16,24 @@ def navbar():
     return rx.hstack(
         rx.hstack(
             # rx.image(src="/favicon.ico", width="2em"),
-            rx.heading("Evening Journal", font_size="2em",),
+            rx.heading(
+                "Evening Journal",
+                font_size="2em",
+                color="#184e47",
+                # box_shadow= "0 4px 30px rgba(0, 0, 0, 0.1)",
+            ),
         ),
         rx.spacer(),
         # rx.button(rx.icon("sun-moon"), on_click=toggle_color_mode, variant="ghost", size="2"),
         rx.menu.root(
             rx.menu.trigger(
-                rx.button("Menu"),
+                rx.button(
+                    "Menu",
+                    color="#eaf6f5",
+                    background_color="#184e47",
+                    # background_image="linear-gradient(#5fab7d, #a4daa6)",
+                    # border="1px solid #eaf6f5",
+                ),
             ),
             rx.menu.content(
                 rx.menu.item(
@@ -37,7 +48,9 @@ def navbar():
         ),
         position="fixed",
         top="0px",
-        background_color="#7dafbf",
+        # background_color="#5fab7d",
+        box_shadow= "0 4px 30px rgba(0, 0, 0, 0.1)",
+        background_image="linear-gradient(0.25turn,#ffffff, #eaf6f5)",
         padding="1em",
         height="4em",
         width="100%",
@@ -140,8 +153,9 @@ def render_post_metadata(time: str, username: str, item: CustomPost):
                 fn=Comments.toggle_comment(item),
             ),
         ),
+        padding=".25rem",
         spacing="2",
-        justify="end"
+        justify_content="space_between"
     )
 
 # Finally have the component that renders the comments by other users
@@ -165,13 +179,16 @@ def render_comments(item):
             ),
             width="100%",
             display="flex",
-            justify_content="start",
-            align_items="center",
+            justify_content="end",
+            align_items="end",
+            padding=".25rem",
             spacing="2"
         ),
+        rx.divider(size="3"),
+        spacing="1",
         width="100%",
         display="flex",
-        padding_left="0.75rem",
+        padding_left="1rem",
         _dark={"border_left":"1px solid gray"},
         _light={"border_left":"1px solid black"}
     )
@@ -188,6 +205,7 @@ def render_post_header(time: str, username: str):
         ),
         spacing="4",
         padding="4px",
+        justify="between"
     )
 
 def render_post_content(intention: str,
@@ -238,7 +256,7 @@ def render_item(item: CustomPost):
                     item.lesson, item.grateful
                 ),
                 *render_post_comment_form(item),
-                rx.hstack(
+                rx.flex(
                     render_post_metadata(
                         item.created_at,
                         item.username,
@@ -249,7 +267,7 @@ def render_item(item: CustomPost):
                     justify="end",
                     align="center"
                 ),
-                rx.divider(height="2", opacity="1"),
+                rx.divider(size="4"),
                 rx.vstack(
                     rx.foreach(
                         iterable=item.comments,
@@ -260,12 +278,20 @@ def render_item(item: CustomPost):
                     justify="center",
                     align="center",
                     spacing="1"
-                )
+                ),
+                width="100%"
+
             ),
-            spacing='3'
+            width="100%",
+            spacing='3',
         ),
-        border_radius="15px",
-        background_color="#f2f2f2",
+        spacing="4",
+
+        background= "rgba(255, 255, 255, 0.82)",
+        border_radius="16px",
+        box_shadow= "0 4px 30px rgba(0, 0, 0, 0.1)",
+        # background_color="#f2f2f2",
+        backdrop_filter="blur(8px)",
         # box_shadow="0px 0px 3px 2px #132a3e",
         justify="center",
         align="center",
@@ -299,4 +325,5 @@ def notebook():
         align="center",
         width="100%",
         direction="column-reverse",
+        background_color="#eaf6f5"
     )
