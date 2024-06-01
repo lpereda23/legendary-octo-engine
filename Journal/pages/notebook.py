@@ -39,6 +39,12 @@ def navbar():
                 rx.menu.item(
                     "New Journal Entry",
                     on_click=Post.toggle_post_form),
+                rx.menu.item(
+                    "Stats",
+                    on_click=rx.redirect(
+                        "/stats"
+                    ),
+                ),
                 rx.menu.separator(),
                 rx.menu.item(
                     "Logout",

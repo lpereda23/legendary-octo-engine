@@ -33,7 +33,7 @@ async def user_login_endpoint(email: str, password: str) -> None:
         )
         # print(f"This is data print ----- {data}", end='\n')
         data = response.json()
-        print(f"This is data print ----- {data}", end='\n')
+        # print(f"This is data print ----- {data}", end='\n')
         # get the data we need
         access_token = data["access_token"]
         expires_in = data["expires_in"]
@@ -120,7 +120,7 @@ async def user_registration_endpoint(username: str, email: str, password: str):
             # check if username is taken
             if await is_username_taken(username) is False:
                 data = response.json()
-                print(data)
+                # print(data)
                 await username_registration_endpoint(
                     data["user"]["id"],
                     username
@@ -164,7 +164,6 @@ async def get_usernames():
 
         return response.json()
 
-
 # next api, getting our posts from supabase
 async def get_posts_endpoint(access_token: str, username_list: str):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts?select=*"
@@ -205,7 +204,6 @@ async def get_posts_endpoint(access_token: str, username_list: str):
             for post in response
         ]
         return custom_posts
-
 
 async def get_comments_for_post(
     access_token: str, post_id: str, username_list: list[dict]
@@ -298,7 +296,7 @@ async def insert_post_to_database(
 async def insert_comment_to_database(access_token: str, comment: dict):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/comments"
 
-    print(comment)
+    # print(comment)
 
     headers = {
         "apikey": PUBLIC_KEY,
@@ -309,5 +307,22 @@ async def insert_comment_to_database(access_token: str, comment: dict):
 
     async with httpx.AsyncClient() as client:
         response = await client.post(url=url,headers=headers, json=comment)
-        print(response)
+        # print(response)
         return response.status_code
+
+# API endpoints for STATS Page
+async def get_post_chart_data(access_token: str, user_id: str, ):
+    # Need to know the user_id
+    # Need access_token
+
+    url = 'https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts?id=eq.1&select=*'
+
+    headers = {
+        "apikey": "SUPABASE_KEY",
+        "Authorization": "Bearer SUPABASE_KEY",
+        "Range": "0-9"
+    }
+
+    posts: list[CustomPost] = await get_posts_endpoint(
+        access_token=access_token,
+    )
