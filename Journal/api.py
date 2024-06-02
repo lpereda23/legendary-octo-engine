@@ -5,7 +5,7 @@ import jwt
 import httpx
 from dotenv import load_dotenv
 
-from Journal.models import Comment, CustomPost
+from Journal.models import Comment, CustomPost, StatsMetrics
 
 load_dotenv()
 PUBLIC_KEY = os.environ["SUPABASE_KEY"]
@@ -310,19 +310,28 @@ async def insert_comment_to_database(access_token: str, comment: dict):
         # print(response)
         return response.status_code
 
-# API endpoints for STATS Page
-async def get_post_chart_data(access_token: str, user_id: str, ):
-    # Need to know the user_id
-    # Need access_token
+# API endpoints for STATS Page -------------------------------------------------
 
-    url = 'https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts?id=eq.1&select=*'
+async def get_post_chart_data(access_token: str, user_id: str):
+    url = f'https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts?&select=*&user_id=eq.{user_id}'
 
     headers = {
-        "apikey": "SUPABASE_KEY",
-        "Authorization": "Bearer SUPABASE_KEY",
-        "Range": "0-9"
+        "apikey": PUBLIC_KEY,
+        "Authorization": f"Bearer {access_token}",
     }
 
-    posts: list[CustomPost] = await get_posts_endpoint(
-        access_token=access_token,
-    )
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+
+        stats_metrics: list[StatsMetrics] = [
+            StatsMetrics(
+                post_id=post["post_id"],
+                user_id=post["user_id"],
+                lesson_score=post["lesson_score"],
+                success_score=post["success_score"],
+                created_at=post["created_at"]
+            )
+            for post in response
+        ]
+        return stats_metrics
