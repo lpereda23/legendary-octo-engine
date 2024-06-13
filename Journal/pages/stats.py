@@ -5,8 +5,9 @@ from Journal.states import Authentication, Post, Stats
 def navbar():
     return rx.hstack(
         rx.button(
-            "Return",
-            on_click=rx.redirect("/notebook")
+            rx.icon("undo-2"),
+            size='1',
+            on_click=rx.redirect("/notebook"),
         ),
         rx.hstack(
             rx.heading(
@@ -57,23 +58,35 @@ def navbar():
 def stats_page():
     return rx.vstack(
         navbar(),
-        rx.text("Hello World"),
-        # rx.scroll_area(
-        #     rx.flex(
+        rx.vstack(
+            rx.text("Lesson and Success Scores"),
+            rx.recharts.bar_chart(
+                rx.recharts.bar(
+                    data_key="lesson_score",
+                    stroke="#8884d8", fill="#8884d8",
+                    label=True
+                ),
+                rx.recharts.bar(
+                    data_key="success_score",
+                    stroke="#82ca9d", fill="#82ca9d",
+                    label=True
+                ),
+                rx.recharts.x_axis(data_key="created_at"),
+                rx.recharts.y_axis(),
+                rx.recharts.cartesian_grid(stroke_dasharray="3 3"),
+                rx.recharts.graphing_tooltip(),
+                rx.recharts.legend(),
+                data=Stats.posts,
+                height=300,
+            ),
+            pading_top="1rem",
+            pading_left="1rem",
+            padding_right="1rem",
+            align="center",
+            width="100%"
 
-        #     )
-        # ),
-        rx.recharts.bar_chart(
-            rx.recharts.bar(
-                data_key="lesson_score", stroke="#8884d8", fill="#8884d8"
-            ),
-            rx.recharts.bar(
-                data_key="success_score", stroke="#82ca9d", fill="#82ca9d"
-            ),
-            rx.recharts.x_axis(data_key="created_at"),
-            rx.recharts.y_axis(),
-            data=Post.ge,
         ),
-        padding_top="5rem",
-        padding_bottom="5rem"
+        padding_top="10rem",
+        # padding_left="1rem",
+        # padding_right="1rem"
     )

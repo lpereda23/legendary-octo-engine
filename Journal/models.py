@@ -26,8 +26,8 @@ class CustomPost(rx.Base):
     is_comment_visible: str = 'none'
 
 class StatsMetrics(rx.Base):
+    post_id: str
     user_id: str
     lesson_score: int
     success_score: int
-    post_id: str
     created_at: str

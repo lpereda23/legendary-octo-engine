@@ -32,7 +32,7 @@ def login() -> rx.Component:
             ),
         render_submit_button(
             name="Login!",
-            event=Authentication.user_login
+            event=Authentication.user_login,
         ),
         *[rx.spacer() for _ in range(2)],
         rx.text(

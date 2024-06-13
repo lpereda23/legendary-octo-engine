@@ -1,6 +1,7 @@
 import reflex as rx
+import pandas as pd
 from .models import CustomPost
-from .api import get_posts_with_comments_api, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
+from .api import get_post_stats_endpoint, get_posts_with_comments_api, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
 
 class State(rx.State):
     def void_event(self): ...
@@ -243,6 +244,8 @@ class Stats(Authentication):
     Method that handles on Stats page landing, ie when user
     reaches the /stats page
     """
+    # x: list[str]
+    # y: list[int]
 
 
     async def on_stats_landing_event(self):
@@ -251,8 +254,11 @@ class Stats(Authentication):
             return rx.redirect(path="/")
         else:
             if await self.is_access_token_valid() is True:
-                await self.get_posts_with_comments()
+                await self.get_posts_stats()
+                # await self.set_x_df()
+                # await self.set_y_df()
                 # print(f"in stats landing --> {self.posts}")
+
             else:
                 return rx.redirect(path="/")
 
@@ -264,7 +270,16 @@ class Stats(Authentication):
             return False
 
     # if the token is valid, we need to get the post and fill up the list...
-    async def get_posts_with_comments(self):
-        self.posts = await get_posts_with_comments_api(
-            self.access_token, self.username_list
+    async def get_posts_stats(self):
+        self.posts = await get_post_stats_endpoint(
+            self.access_token, self.user_id
         )
+
+    # async def set_x_df(self):
+    #     self.x = await get_x_df(
+    #         self.access_token, self.posts
+    #     )
+    # async def set_y_df(self):
+    #     self.y = await get_stats_df_endpoint(
+    #         self.access_token, self.posts
+    #     )

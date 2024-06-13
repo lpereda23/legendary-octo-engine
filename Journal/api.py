@@ -1,6 +1,7 @@
 # main API page
 from datetime import datetime
 import os
+import pandas as pd
 import jwt
 import httpx
 from dotenv import load_dotenv
@@ -191,13 +192,14 @@ async def get_posts_endpoint(access_token: str, username_list: str):
                 lesson_score=post["lesson_score"],
                 success_score=post["success_score"],
 
-                created_at=post["created_at"],
+                created_at=pd.to_datetime(post["created_at"]).strftime('%B %d, %Y'),
                 username=next(
                     (
                         user['username']
                         for user in username_list
                         if user["id"] == post["user_id"]
-                    )
+                    ),
+                    "none"
                 ),
                 comments=[]
             )
@@ -227,14 +229,14 @@ async def get_comments_for_post(
                 user_id=comment["user_id"],
                 post_id=comment["post_id"],
                 content=comment["content"],
-                created_at=comment["created_at"],
+                created_at=pd.to_datetime(comment["created_at"]).strftime('%B %d, %Y'),
                 username=next(
                     (
                         user['username']
                         for user in username_list
                         if user["id"] == comment["user_id"]
                     ),
-                    None,
+                    "none",
                 ),
             )
             for comment in data
@@ -312,7 +314,7 @@ async def insert_comment_to_database(access_token: str, comment: dict):
 
 # API endpoints for STATS Page -------------------------------------------------
 
-async def get_post_chart_data(access_token: str, user_id: str):
+async def get_post_stats_endpoint(access_token: str, user_id: str):
     url = f'https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts?&select=*&user_id=eq.{user_id}'
 
     headers = {
@@ -330,8 +332,14 @@ async def get_post_chart_data(access_token: str, user_id: str):
                 user_id=post["user_id"],
                 lesson_score=post["lesson_score"],
                 success_score=post["success_score"],
-                created_at=post["created_at"]
+                created_at=pd.to_datetime(post["created_at"]).strftime('%B %d, %Y')
             )
             for post in response
         ]
+        print(f"STATS_METRICS---->{stats_metrics}", end='\n')
         return stats_metrics
+
+# async def get_x_df(access_token: str, posts: str):
+
+#     for post in posts:
+#         print(post.keys())
