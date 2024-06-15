@@ -1,11 +1,12 @@
 # main API page
 from datetime import datetime
 import os
+import pandas as pd
 import jwt
 import httpx
 from dotenv import load_dotenv
 
-from Journal.models import Comment, CustomPost
+from Journal.models import Comment, CustomPost, StatsMetrics
 
 load_dotenv()
 PUBLIC_KEY = os.environ["SUPABASE_KEY"]
@@ -33,7 +34,7 @@ async def user_login_endpoint(email: str, password: str) -> None:
         )
         # print(f"This is data print ----- {data}", end='\n')
         data = response.json()
-        print(f"This is data print ----- {data}", end='\n')
+        # print(f"This is data print ----- {data}", end='\n')
         # get the data we need
         access_token = data["access_token"]
         expires_in = data["expires_in"]
@@ -120,7 +121,7 @@ async def user_registration_endpoint(username: str, email: str, password: str):
             # check if username is taken
             if await is_username_taken(username) is False:
                 data = response.json()
-                print(data)
+                # print(data)
                 await username_registration_endpoint(
                     data["user"]["id"],
                     username
@@ -164,7 +165,6 @@ async def get_usernames():
 
         return response.json()
 
-
 # next api, getting our posts from supabase
 async def get_posts_endpoint(access_token: str, username_list: str):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts?select=*"
@@ -192,20 +192,20 @@ async def get_posts_endpoint(access_token: str, username_list: str):
                 lesson_score=post["lesson_score"],
                 success_score=post["success_score"],
 
-                created_at=post["created_at"],
+                created_at=pd.to_datetime(post["created_at"]).strftime('%B %d, %Y'),
                 username=next(
                     (
                         user['username']
                         for user in username_list
                         if user["id"] == post["user_id"]
-                    )
+                    ),
+                    "none"
                 ),
                 comments=[]
             )
             for post in response
         ]
         return custom_posts
-
 
 async def get_comments_for_post(
     access_token: str, post_id: str, username_list: list[dict]
@@ -229,14 +229,14 @@ async def get_comments_for_post(
                 user_id=comment["user_id"],
                 post_id=comment["post_id"],
                 content=comment["content"],
-                created_at=comment["created_at"],
+                created_at=pd.to_datetime(comment["created_at"]).strftime('%B %d, %Y'),
                 username=next(
                     (
                         user['username']
                         for user in username_list
                         if user["id"] == comment["user_id"]
                     ),
-                    None,
+                    "none",
                 ),
             )
             for comment in data
@@ -298,7 +298,7 @@ async def insert_post_to_database(
 async def insert_comment_to_database(access_token: str, comment: dict):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/comments"
 
-    print(comment)
+    # print(comment)
 
     headers = {
         "apikey": PUBLIC_KEY,
@@ -309,5 +309,37 @@ async def insert_comment_to_database(access_token: str, comment: dict):
 
     async with httpx.AsyncClient() as client:
         response = await client.post(url=url,headers=headers, json=comment)
-        print(response)
+        # print(response)
         return response.status_code
+
+# API endpoints for STATS Page -------------------------------------------------
+
+async def get_post_stats_endpoint(access_token: str, user_id: str):
+    url = f'https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/posts?&select=*&user_id=eq.{user_id}'
+
+    headers = {
+        "apikey": PUBLIC_KEY,
+        "Authorization": f"Bearer {access_token}",
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+
+        stats_metrics: list[StatsMetrics] = [
+            StatsMetrics(
+                post_id=post["post_id"],
+                user_id=post["user_id"],
+                lesson_score=post["lesson_score"],
+                success_score=post["success_score"],
+                created_at=pd.to_datetime(post["created_at"]).strftime('%B %d, %Y')
+            )
+            for post in response
+        ]
+        print(f"STATS_METRICS---->{stats_metrics}", end='\n')
+        return stats_metrics
+
+# async def get_x_df(access_token: str, posts: str):
+
+#     for post in posts:
+#         print(post.keys())

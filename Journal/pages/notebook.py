@@ -2,6 +2,7 @@
 
 import reflex as rx
 from reflex.style import toggle_color_mode
+from Journal.styles import post_card
 from Journal.components.form import render_post_form
 from Journal.states import Authentication, JournalData, Comments, Post
 from Journal.models import CustomPost
@@ -19,7 +20,7 @@ def navbar():
             rx.heading(
                 "Evening Journal",
                 font_size="2em",
-                color="#184e47",
+                color="#374B43",
                 # box_shadow= "0 4px 30px rgba(0, 0, 0, 0.1)",
             ),
         ),
@@ -30,7 +31,7 @@ def navbar():
                 rx.button(
                     "Menu",
                     color="#eaf6f5",
-                    background_color="#184e47",
+                    background_color="#374B43",
                     # background_image="linear-gradient(#5fab7d, #a4daa6)",
                     # border="1px solid #eaf6f5",
                 ),
@@ -39,6 +40,15 @@ def navbar():
                 rx.menu.item(
                     "New Journal Entry",
                     on_click=Post.toggle_post_form),
+                rx.menu.item(
+                    "Stats",
+                    on_click=rx.redirect(
+                        "/stats"
+                    ),
+                ),
+                rx.menu.item(
+                    "Account",
+                ),
                 rx.menu.separator(),
                 rx.menu.item(
                     "Logout",
@@ -287,11 +297,12 @@ def render_item(item: CustomPost):
         ),
         spacing="4",
 
-        background= "rgba(255, 255, 255, 0.82)",
-        border_radius="16px",
-        box_shadow= "0 4px 30px rgba(0, 0, 0, 0.1)",
+        style=post_card,
+        ##background= "rgba(255, 255, 255, 0.82)",
+        ##border_radius="16px",
+        ##box_shadow= "0 4px 30px rgba(0, 0, 0, 0.1)",
         # background_color="#f2f2f2",
-        backdrop_filter="blur(8px)",
+        ## backdrop_filter="blur(8px)",
         # box_shadow="0px 0px 3px 2px #132a3e",
         justify="center",
         align="center",
@@ -325,5 +336,7 @@ def notebook():
         align="center",
         width="100%",
         direction="column-reverse",
-        background_color="#eaf6f5"
+        # background_color="#eaf6f5"
+        background_color = "rgb(2,110,230)",
+        background = "radial-gradient(circle, rgba(2,110,230,0.6713060224089635) 7%, rgba(23,255,196,0.6825105042016807) 88%)",
     )

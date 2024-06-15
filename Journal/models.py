@@ -11,8 +11,6 @@ class Comment(rx.Base):
     created_at: str
     username: str
 
-
-
 class CustomPost(rx.Base):
     id: str # THE KEYS MUST MATCH THE KEYS INSIDE SUPABASE TABLES
     user_id: str
@@ -26,3 +24,10 @@ class CustomPost(rx.Base):
     comments: List[Comment]
     username: str
     is_comment_visible: str = 'none'
+
+class StatsMetrics(rx.Base):
+    post_id: str
+    user_id: str
+    lesson_score: int
+    success_score: int
+    created_at: str

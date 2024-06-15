@@ -1,6 +1,7 @@
 import reflex as rx
+import pandas as pd
 from .models import CustomPost
-from .api import get_posts_with_comments_api, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
+from .api import get_post_stats_endpoint, get_posts_with_comments_api, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
 
 class State(rx.State):
     def void_event(self): ...
@@ -100,7 +101,7 @@ class JournalData(Authentication):
         else:
             if await self.is_access_token_valid() is True:
                 await self.get_posts_with_comments()
-                print(f"in notebook landing --> {self.posts}")
+                # print(f"in notebook landing --> {self.posts}")
             else:
                 return rx.redirect(path="/")
 
@@ -237,3 +238,48 @@ class Post(Authentication):
                 return rx.redirect("/notebook")
         else:
             print("Acess token not valid.")
+
+class Stats(Authentication):
+    """
+    Method that handles on Stats page landing, ie when user
+    reaches the /stats page
+    """
+    # x: list[str]
+    # y: list[int]
+
+
+    async def on_stats_landing_event(self):
+        if not self.access_token:
+            self.posts = []
+            return rx.redirect(path="/")
+        else:
+            if await self.is_access_token_valid() is True:
+                await self.get_posts_stats()
+                # await self.set_x_df()
+                # await self.set_y_df()
+                # print(f"in stats landing --> {self.posts}")
+
+            else:
+                return rx.redirect(path="/")
+
+    # if the user does have an access token, check if user is validated/authenticated
+    async def is_access_token_valid(self):
+        if await is_user_authenticated(self.access_token) is True:
+            return True
+        else:
+            return False
+
+    # if the token is valid, we need to get the post and fill up the list...
+    async def get_posts_stats(self):
+        self.posts = await get_post_stats_endpoint(
+            self.access_token, self.user_id
+        )
+
+    # async def set_x_df(self):
+    #     self.x = await get_x_df(
+    #         self.access_token, self.posts
+    #     )
+    # async def set_y_df(self):
+    #     self.y = await get_stats_df_endpoint(
+    #         self.access_token, self.posts
+    #     )
