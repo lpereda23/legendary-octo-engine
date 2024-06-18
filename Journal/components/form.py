@@ -5,35 +5,36 @@ from Journal.states import Post
 def render_post_form():
     return rx.dialog.root(
             rx.dialog.content(
-                rx.dialog.title("Submit New Journal Entry"),
+                rx.dialog.title("New Journal Entry"),
                 rx.spacer(),
-                rx.input(
+                rx.text_area(
                         placeholder="Intention(s):",
                         margin="0.5rem 0rem",
                         value=Post.post_intention,
                         on_change=Post.update_post_intention
                 ),
                 rx.spacer(),
-                rx.input(
+                rx.text_area(
                         placeholder="Success(es):",
                         margin="0.5rem 0rem",
                         value=Post.post_success,
                         on_change=Post.update_post_success
                 ),
                 rx.spacer(),
-                rx.input(
+                rx.text_area(
                         placeholder="Lesson(s):",
                         margin="0.5rem 0rem",
                         value=Post.post_lesson,
                         on_change=Post.update_post_lesson
                 ),
                 rx.spacer(),
-                rx.input(
-                        placeholder="Grateful for:",
+                rx.text_area(
+                        placeholder="Gratitude(s):",
                         margin="0.5rem 0rem",
                         value=Post.post_grateful,
                         on_change=Post.update_post_grateful
                 ),
+                rx.spacer(),
                 rx.spacer(),
                 # padding="0.25rem 1rem"
 
@@ -58,6 +59,7 @@ def render_post_form():
                             on_change=Post.update_post_success_score,
                         ),
                 ),
+                rx.spacer(),
                 rx.flex(
                     rx.dialog.close(
                         rx.button(

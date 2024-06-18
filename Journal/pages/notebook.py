@@ -28,12 +28,12 @@ def navbar():
         # rx.button(rx.icon("sun-moon"), on_click=toggle_color_mode, variant="ghost", size="2"),
         rx.menu.root(
             rx.menu.trigger(
-                rx.button(
-                    "Menu",
+                rx.icon_button(
+                    rx.icon("user"),
+                    size="2",
+                    radius="full",
                     color="#eaf6f5",
                     background_color="#374B43",
-                    # background_image="linear-gradient(#5fab7d, #a4daa6)",
-                    # border="1px solid #eaf6f5",
                 ),
             ),
             rx.menu.content(
