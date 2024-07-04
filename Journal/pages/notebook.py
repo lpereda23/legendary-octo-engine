@@ -48,6 +48,9 @@ def navbar():
                 ),
                 rx.menu.item(
                     "Account",
+                    on_click=rx.redirect(
+                        "/profile"
+                    )
                 ),
                 rx.menu.separator(),
                 rx.menu.item(

@@ -340,6 +340,3 @@ async def get_post_stats_endpoint(access_token: str, user_id: str):
         return stats_metrics
 
 # async def get_x_df(access_token: str, posts: str):
-
-#     for post in posts:
-#         print(post.keys())
