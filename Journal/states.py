@@ -1,6 +1,6 @@
 import reflex as rx
 import pandas as pd
-from .models import CustomPost
+from .models import CustomPost, StatsMetrics
 from .api import get_post_stats_endpoint, get_posts_with_comments_api, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
 
 class State(rx.State):
@@ -89,7 +89,6 @@ class Authentication(LoginState):
         if response == 204:
             return rx.redirect("/")
 
-
 class JournalData(Authentication):
     """
     Method that handles on Journal landing, ie when user reaches the /notebook route
@@ -120,7 +119,7 @@ class JournalData(Authentication):
         # print(self.posts)
 
 class Comments(Authentication):
-    post_comment: str #object that handles user's comment...
+    post_comment: str = ""#object that handles user's comment...
 
     async def void_event(self):...
 
@@ -246,11 +245,12 @@ class Stats(Authentication):
     """
     # x: list[str]
     # y: list[int]
+    posts_stats: list[StatsMetrics]
 
 
     async def on_stats_landing_event(self):
         if not self.access_token:
-            self.posts = []
+            self.posts_stats = []
             return rx.redirect(path="/")
         else:
             if await self.is_access_token_valid() is True:
@@ -271,7 +271,7 @@ class Stats(Authentication):
 
     # if the token is valid, we need to get the post and fill up the list...
     async def get_posts_stats(self):
-        self.posts = await get_post_stats_endpoint(
+        self.posts_stats = await get_post_stats_endpoint(
             self.access_token, self.user_id
         )
 
