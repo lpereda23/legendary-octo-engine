@@ -283,3 +283,10 @@ class Stats(Authentication):
     #     self.y = await get_stats_df_endpoint(
     #         self.access_token, self.posts
     #     )
+
+class Profile(Authentication):
+    """
+    Class for the profile page where user has users' information along with
+        drainers and gainers, and goals defined.
+    """
+    ...
