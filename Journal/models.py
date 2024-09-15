@@ -31,3 +31,9 @@ class StatsMetrics(rx.Base):
     lesson_score: int
     success_score: int
     created_at: str
+
+
+# class Profile(rx.Base):
+#     email: str
+#     password: str
+#     # notifications: bool = False

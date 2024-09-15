@@ -1,6 +1,6 @@
 # Page to review stats for journaling
 import reflex as rx
-from Journal.states import Authentication, Post, Stats
+from Journal.states import Authentication, Post, StatsState
 
 def navbar():
     return rx.hstack(
@@ -54,7 +54,7 @@ def navbar():
         z_index="5",
     )
 
-@rx.page('/stats/', on_load=Stats.on_stats_landing_event)
+@rx.page('/stats', on_load=Stats.on_stats_landing_event)
 def stats_page():
     return rx.vstack(
         navbar(),
