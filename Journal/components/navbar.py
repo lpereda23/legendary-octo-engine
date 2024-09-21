@@ -116,7 +116,7 @@ def menu_button() -> rx.Component:
 
     # Get the decorated pages.
     pages = get_decorated_pages()
-
+    # print(pages)
     # Include all pages even if they are not in the ordered_page_routes.
     ordered_pages = sorted(
         pages,

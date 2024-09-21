@@ -280,6 +280,40 @@ async def get_posts_with_comments_api(
     # print(f"Return of posts--> {posts}")
     return posts
 
+#TODO: Here work on filter
+# Method to update posts on filtered dates selected
+async def get_posts_with_comments_filtered(
+    access_token: str, username_list: list[dict],
+    start_date: str, end_date: str
+):
+    posts: list[CustomPost] = await get_posts_endpoint(
+        access_token=access_token, username_list=username_list
+    )
+    print(start_date, end="\n")
+    print(end_date, end="\n")
+    # loop over posts and filter on specific dates
+    print("#"*20, end='\n')
+    for post in posts:
+        if (pd.to_datetime(post.created_at) <= pd.to_datetime(end_date)) and (
+            pd.to_datetime(post.created_at) >= pd.to_datetime(start_date)):
+            print(post.created_at)
+    posts = [
+        post for post in posts if (pd.to_datetime(post.created_at) <= pd.to_datetime(end_date)) and (
+            pd.to_datetime(post.created_at) >= pd.to_datetime(start_date))
+    ]
+    print("#"*20, end='\n')
+
+    #loop over the list of custom posts and match the ORIGINAL post id
+    # with its counterpart in the COMMENT object
+    for post in posts:
+        comments: list[Comment] = await get_comments_for_post(
+            access_token=access_token, post_id=post.id, username_list=username_list
+        )
+        # set the post comments list to the newly updated list
+        post.comments = comments
+    # print(f"Return of posts--> {posts}")
+    return posts
+
 # API endpoint to push the post to supabase
 async def insert_post_to_database(
     access_token: str, user_id: str,
@@ -354,7 +388,7 @@ async def get_post_stats_endpoint(access_token: str, user_id: str):
             )
             for post in response
         ]
-        # print(f"STATS_METRICS---->{stats_metrics}", end='\n')
+        print(f"STATS_METRICS---->{stats_metrics}", end='\n')
         return stats_metrics
 
 # async def get_x_df(access_token: str, posts: str):
