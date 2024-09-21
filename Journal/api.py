@@ -280,7 +280,7 @@ async def get_posts_with_comments_api(
     # print(f"Return of posts--> {posts}")
     return posts
 
-#TODO: Here work on filter
+
 # Method to update posts on filtered dates selected
 async def get_posts_with_comments_filtered(
     access_token: str, username_list: list[dict],
@@ -289,19 +289,12 @@ async def get_posts_with_comments_filtered(
     posts: list[CustomPost] = await get_posts_endpoint(
         access_token=access_token, username_list=username_list
     )
-    print(start_date, end="\n")
-    print(end_date, end="\n")
-    # loop over posts and filter on specific dates
-    print("#"*20, end='\n')
-    for post in posts:
-        if (pd.to_datetime(post.created_at) <= pd.to_datetime(end_date)) and (
-            pd.to_datetime(post.created_at) >= pd.to_datetime(start_date)):
-            print(post.created_at)
+
+    # loop over posts and filter on specific dates and update posts list
     posts = [
         post for post in posts if (pd.to_datetime(post.created_at) <= pd.to_datetime(end_date)) and (
             pd.to_datetime(post.created_at) >= pd.to_datetime(start_date))
     ]
-    print("#"*20, end='\n')
 
     #loop over the list of custom posts and match the ORIGINAL post id
     # with its counterpart in the COMMENT object
