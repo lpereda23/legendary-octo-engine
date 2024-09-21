@@ -1,10 +1,18 @@
 import reflex as rx
 import pandas as pd
+import datetime
+import random
 from .models import CustomPost, StatsMetrics
-from .api import get_post_stats_endpoint, get_posts_with_comments_api, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
+from .api import get_post_stats_endpoint, get_posts_with_comments_api, get_user_name, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
 
 class State(rx.State):
+    user_logged_in: bool = False
+
     def void_event(self): ...
+
+    def check_login(self):
+        if not self.user_logged_in:
+            return rx.redirect("/login")
 
 class LoginState(State):
     email: str
@@ -48,11 +56,21 @@ class Authentication(LoginState):
     user_id: str
     user_email: str
     session_exp: str
+    username: str
 
     user_cookies: str = rx.Cookie(name="Journal")
 
     posts: list[CustomPost] # pass the data model here...
     username_list: list [dict]
+
+    async def handle_submit(self, form_data: dict):
+        self.email = form_data['email']
+        self.password = form_data['password']
+        # print(self.email)
+        # print(self.password)
+        res = await self.user_login()
+        await self.get_username()
+        return res
 
     async def user_cookie(self):
         self.user_cookies = {
@@ -63,6 +81,9 @@ class Authentication(LoginState):
 
     async def get_username_list(self):
         self.username_list = await get_usernames()
+
+    async def get_username(self):
+        self.username = await get_user_name(self.access_token, self.user_id)
 
     async def user_login(self):
         (
@@ -78,7 +99,7 @@ class Authentication(LoginState):
         await self.user_cookie()
 
         await self.get_username_list()
-        return rx.redirect("/notebook")
+        return rx.redirect("/")
 
     async def user_logout(self):
         response = await user_logout_endpoint(self.access_token)
@@ -96,7 +117,7 @@ class JournalData(Authentication):
     async def on_notebook_landing_event(self):
         if not self.access_token:
             self.posts = []
-            return rx.redirect(path="/")
+            return rx.redirect(path="/login")
         else:
             if await self.is_access_token_valid() is True:
                 await self.get_posts_with_comments()
@@ -238,7 +259,7 @@ class Post(Authentication):
         else:
             print("Acess token not valid.")
 
-class Stats(Authentication):
+class StatsState(Authentication):
     """
     Method that handles on Stats page landing, ie when user
     reaches the /stats page
@@ -247,20 +268,30 @@ class Stats(Authentication):
     # y: list[int]
     posts_stats: list[StatsMetrics]
 
+    # Old stat states, will redo with correct data
+    area_toggle: bool = True
+    selected_tab: str = "users"
+    timeframe: str = "Monthly"
+    users_data = []
+    revenue_data = []
+    orders_data = []
+    device_data = []
+    yearly_device_data = []
 
     async def on_stats_landing_event(self):
         if not self.access_token:
             self.posts_stats = []
-            return rx.redirect(path="/")
+            return rx.redirect(path="/login")
         else:
             if await self.is_access_token_valid() is True:
                 await self.get_posts_stats()
                 # await self.set_x_df()
                 # await self.set_y_df()
                 # print(f"in stats landing --> {self.posts}")
+                self.randomize_data()
 
             else:
-                return rx.redirect(path="/")
+                return rx.redirect(path="/login")
 
     # if the user does have an access token, check if user is validated/authenticated
     async def is_access_token_valid(self):
@@ -275,18 +306,54 @@ class Stats(Authentication):
             self.access_token, self.user_id
         )
 
-    # async def set_x_df(self):
-    #     self.x = await get_x_df(
-    #         self.access_token, self.posts
-    #     )
-    # async def set_y_df(self):
-    #     self.y = await get_stats_df_endpoint(
-    #         self.access_token, self.posts
-    #     )
+    # Old Stats state handlers
+    def toggle_areachart(self):
+        self.area_toggle = not self.area_toggle
 
-class Profile(Authentication):
-    """
-    Class for the profile page where user has users' information along with
-        drainers and gainers, and goals defined.
-    """
-    ...
+    def randomize_data(self):
+        # If data is already populated, don't randomize
+        if self.users_data:
+            return
+
+        for i in range(30, -1, -1):  # Include today's data
+            self.revenue_data.append(
+                {
+                    "Date": (
+                        datetime.datetime.now() - datetime.timedelta(days=i)
+                    ).strftime("%m-%d"),
+                    "Revenue": random.randint(1000, 5000),
+                }
+            )
+        for i in range(30, -1, -1):
+            self.orders_data.append(
+                {
+                    "Date": (
+                        datetime.datetime.now() - datetime.timedelta(days=i)
+                    ).strftime("%m-%d"),
+                    "Orders": random.randint(100, 500),
+                }
+            )
+
+        for i in range(30, -1, -1):
+            self.users_data.append(
+                {
+                    "Date": (
+                        datetime.datetime.now() - datetime.timedelta(days=i)
+                    ).strftime("%m-%d"),
+                    "Users": random.randint(100, 500),
+                }
+            )
+
+        self.device_data = [
+            {"name": "Desktop", "value": 23, "fill": "var(--blue-8)"},
+            {"name": "Mobile", "value": 47, "fill": "var(--green-8)"},
+            {"name": "Tablet", "value": 25, "fill": "var(--purple-8)"},
+            {"name": "Other", "value": 5, "fill": "var(--red-8)"},
+        ]
+
+        self.yearly_device_data = [
+            {"name": "Desktop", "value": 34, "fill": "var(--blue-8)"},
+            {"name": "Mobile", "value": 46, "fill": "var(--green-8)"},
+            {"name": "Tablet", "value": 21, "fill": "var(--purple-8)"},
+            {"name": "Other", "value": 9, "fill": "var(--red-8)"},
+        ]

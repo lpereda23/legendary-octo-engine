@@ -26,13 +26,13 @@ async def user_login_endpoint(email: str, password: str) -> None:
         "email": email,
         "password": password
     }
-    # print(f"This is the 'headers' {headers}",end='\n')
+    #print(f"This is the 'headers' {headers}",end='\n')
     # send request...
     async with httpx.AsyncClient() as client:
         response = await client.post(
             url, headers=headers, json=data
         )
-        # print(f"This is data print ----- {data}", end='\n')
+        # print(f"This is response ----- {response.status_code}", end='\n')
         data = response.json()
         # print(f"This is data print ----- {data}", end='\n')
         # get the data we need
@@ -150,6 +150,24 @@ async def is_user_authenticated(access_token: str):
             return True
     else:
         return False
+
+# endpoint to get username
+async def get_user_name(access_token: str, user_id: str):
+    url = f"https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/users?id=eq.{user_id}&select=*"
+
+    headers = {
+        "apikey": PUBLIC_KEY,
+        "Authorization": f"Bearer {access_token}",
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        # print(response.json())
+        if response.status_code == 200:
+            response = response.json()[0]['username']
+            # print(response)
+            return response
+        return None
 
 # username endpoint
 async def get_usernames():
@@ -336,7 +354,7 @@ async def get_post_stats_endpoint(access_token: str, user_id: str):
             )
             for post in response
         ]
-        print(f"STATS_METRICS---->{stats_metrics}", end='\n')
+        # print(f"STATS_METRICS---->{stats_metrics}", end='\n')
         return stats_metrics
 
 # async def get_x_df(access_token: str, posts: str):
