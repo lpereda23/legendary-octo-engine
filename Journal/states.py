@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 import random
 from .models import CustomPost, StatsMetrics
-from .api import get_post_stats_endpoint, get_posts_with_comments_api, get_user_name, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
+from .api import get_post_stats_endpoint, get_posts_with_comments_api, get_posts_with_comments_filtered, get_user_name, insert_comment_to_database, insert_post_to_database, user_login_endpoint, user_logout_endpoint, user_registration_endpoint, is_user_authenticated, get_usernames
 
 class State(rx.State):
     user_logged_in: bool = False
@@ -62,6 +62,9 @@ class Authentication(LoginState):
 
     posts: list[CustomPost] # pass the data model here...
     username_list: list [dict]
+
+    start_date: str
+    end_date: str
 
     async def handle_submit(self, form_data: dict):
         self.email = form_data['email']
@@ -138,6 +141,16 @@ class JournalData(Authentication):
             self.access_token, self.username_list
         )
         # print(self.posts)
+
+    async def set_date_filter(self, filter_form):
+        self.start_date = filter_form["event_start"]
+        self.end_date = filter_form["event_end"]
+
+        self.posts = await get_posts_with_comments_filtered(
+            self.access_token, self.username_list,
+            self.start_date, self.end_date
+        )
+
 
 class Comments(Authentication):
     post_comment: str = ""#object that handles user's comment...

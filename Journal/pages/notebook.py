@@ -7,6 +7,7 @@ from Journal.styles import post_card
 from Journal.components.form import render_post_form
 from Journal.states import Authentication, JournalData, Comments, Post
 from Journal.models import CustomPost
+from datetime import datetime
 
 def switch_theme_color():
     return {
@@ -257,6 +258,12 @@ def render_post_content(intention: str,
         )
     ]
 
+def filter_render_item(item: CustomPost):
+    if (datetime.fromtimestamp(item.created_at) >=
+        datetime.fromtimestamp(JournalData.start_date)) and (datetime.fromtimestamp(item.created_at) <=
+        datetime.fromtimestamp(JournalData.end_date)):
+            render_item(item)
+
 def render_item(item: CustomPost):
     return rx.flex(
         rx.vstack(
@@ -302,48 +309,10 @@ def render_item(item: CustomPost):
         spacing="4",
 
         style=post_card,
-        ##background= "rgba(255, 255, 255, 0.82)",
-        ##border_radius="16px",
-        ##box_shadow= "0 4px 30px rgba(0, 0, 0, 0.1)",
-        # background_color="#f2f2f2",
-        ## backdrop_filter="blur(8px)",
-        # box_shadow="0px 0px 3px 2px #132a3e",
         justify="center",
         align="center",
         width="100%"
     )
-
-# @rx.page("/notebook", on_load=JournalData.on_notebook_landing_event)
-# def notebook():
-#     return rx.stack(
-#         #post form goes here
-#         render_post_form(),
-#         navbar(),
-#         rx.stack(
-#             rx.foreach(
-#                     JournalData.posts,
-#                     render_fn=render_item
-#             ),
-
-#             width="100%",
-#             align="center",
-#             padding_top="5rem",
-#             padding_left="1rem",
-#             padding_right="1rem",
-#             padding_bottom="5rem",
-#             direction="column-reverse",
-#             # padding="5rem 2rem",
-#             overflow="auto",
-#             transition="all 550ms ease",
-#         ),
-#         rx.spacer(),
-#         align="center",
-#         width="100%",
-#         direction="column-reverse",
-#         # background_color="#eaf6f5"
-#         background_color = "rgb(2,110,230)",
-#         background = "radial-gradient(circle, rgba(2,110,230,0.6713060224089635) 7%, rgba(23,255,196,0.6825105042016807) 88%)",
-#     )
 
 
 def form_field(
@@ -368,18 +337,18 @@ def form_field(
 def event_form() -> rx.Component:
     return rx.card(
         rx.flex(
-            rx.hstack(
-                rx.badge(
-                    rx.icon(tag="calendar-plus", size=32),
-                    color_scheme="mint",
-                    radius="full",
-                    padding="0.65rem",
-                ),
-                height="100%",
-                spacing="4",
-                align_items="center",
-                width="100%",
-            ),
+            # rx.hstack(
+            #     rx.badge(
+            #         rx.icon(tag="calendar-plus", size=32),
+            #         color_scheme="mint",
+            #         radius="full",
+            #         padding="0.65rem",
+            #     ),
+            #     height="100%",
+            #     spacing="4",
+            #     align_items="center",
+            #     width="100%",
+            # ),
             rx.form.root(
                 rx.flex(
                     rx.flex(
@@ -389,19 +358,20 @@ def event_form() -> rx.Component:
                         form_field(
                             "Date", "", "date", "event_end"
                         ),
-                        spacing="3",
+                        spacing="5",
                         flex_direction="row",
+                        justify='between',
+                        width="100%"
                     ),
                     direction="column",
                     spacing="2",
                 ),
                 rx.form.submit(
-                    rx.button("Create"),
+                    rx.button("Set Date Range"),
                     as_child=True,
                     width="100%",
                 ),
-                on_submit=lambda form_data: rx.window_alert(
-                    form_data.to_string()
+                on_submit=lambda form_data: JournalData.set_date_filter(form_data
                 ),
                 reset_on_submit=False,
             ),
@@ -417,14 +387,19 @@ def filter_dialog() -> rx.Component:
     Dialog to select filters for Journal entries, on notebook
     """
     return rx.dialog.root(
-        rx.dialog.trigger(rx.button("Filter")),
+        rx.dialog.trigger(rx.button("Filter", variant="soft")),
         rx.dialog.content(
-            rx.dialog.title("Select Filters"),
-            rx.dialog.description("Stuff goes here"),
+            rx.dialog.title("Select Date Range"),
+            rx.dialog.description("Display journal entries between selected dates"),
             event_form(),
-            rx.dialog.close(
-                rx.button("Close", size="3"),
-            ),
+            rx.flex(
+                rx.dialog.close(
+                rx.button("Close", size="3", variant="soft"),
+                ),
+                justify="end",
+                margin_top="1em"
+            )
+
         ),
     )
 
@@ -438,8 +413,14 @@ def notebook() -> rx.Component:
     Returns: The UI for the notebook page.
     """
     return rx.vstack(
-        rx.heading("All your Entries", size="4"),
-        filter_dialog(),
+        rx.hstack(
+            rx.heading("All your Entries", size="4"),
+            filter_dialog(),
+            direction="row",
+            justify="between",
+            spacing="3",
+            width="100%",
+        ),
         render_post_form(),
         render_reveal(),
 

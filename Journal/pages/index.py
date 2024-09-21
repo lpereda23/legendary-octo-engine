@@ -18,6 +18,8 @@ from ..components.notification import notification
 from ..components.card import card
 # from .profile import ProfileState
 import datetime
+import reflex as rx
+from Journal.states import Authentication, Post, StatsState
 
 
 def _time_data() -> rx.Component:
@@ -32,7 +34,6 @@ def _time_data() -> rx.Component:
         display=["none", "none", "flex"],
     )
 
-
 def tab_content_header() -> rx.Component:
     return rx.hstack(
         _time_data(),
@@ -42,9 +43,8 @@ def tab_content_header() -> rx.Component:
         spacing="4",
     )
 
-
-@template(route="/", title="Overview", on_load=StatsState.on_stats_landing_event)
-def index() -> rx.Component:
+# @template(route="/", title="Overview", on_load=StatsState.on_stats_landing_event)
+def index_previous() -> rx.Component:
     """The overview page.
 
     Returns:
@@ -136,4 +136,44 @@ def index() -> rx.Component:
         ),
         spacing="8",
         width="100%",
+    )
+
+@template(route="/", title="Overview", on_load=StatsState.on_stats_landing_event)
+def index() -> rx.Component:
+    """
+    The overview page.
+
+    Returns:
+        The UI for the overview page.
+    """
+    return rx.vstack(
+        rx.heading("Welcome, User", size="5"),
+        rx.vstack(
+            rx.text("Lesson and Success Scores"),
+            rx.recharts.bar_chart(
+                rx.recharts.bar(
+                    data_key="lesson_score",
+                    stroke="#8884d8", fill="#8884d8",
+                    label=True
+                ),
+                rx.recharts.bar(
+                    data_key="success_score",
+                    stroke="#82ca9d", fill="#82ca9d",
+                    label=True
+                ),
+                rx.recharts.x_axis(data_key="created_at"),
+                rx.recharts.y_axis(),
+                # rx.recharts.cartesian_grid(stroke_dasharray="3 3"),
+                rx.recharts.graphing_tooltip(),
+                # rx.recharts.legend(),
+                data=StatsState.posts,
+                height=300,
+            ),
+            padding_top="1rem",
+            padding_left="1rem",
+            padding_right="1rem",
+            align="center",
+            width="100%",
+        ),
+        width="100%"
     )
