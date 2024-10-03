@@ -61,12 +61,12 @@ async def user_logout_endpoint(access_token: str):
         return response.status_code
 
 # second API endpoint: user registration
-async def username_registration_endpoint(user_id: str, username: str):
+async def username_registration_endpoint(user_id: str, username: str, access_token: str):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/users"
 
     headers = {
         "apikey": PUBLIC_KEY,
-        "Authorization": f"Bearer {PUBLIC_KEY}",
+        "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"
     }
 
@@ -77,17 +77,18 @@ async def username_registration_endpoint(user_id: str, username: str):
 
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=data)
+        # print(f"This is the response {response}", end='\n')
 
         # 201, NOT 200
         return response.status_code
 
 
-async def is_username_taken(username: str):
+async def is_username_taken(username: str, access_token: str):
     url = "https://mddgckpnxesyhhwpaydc.supabase.co/rest/v1/users?select=*"
 
     headers = {
         "apikey": PUBLIC_KEY,
-        "Authorization": f"Bearer {PUBLIC_KEY}",
+        "Authorization": f"Bearer {access_token}",
     }
 
     async with httpx.AsyncClient() as client:
@@ -106,25 +107,27 @@ async def user_registration_endpoint(username: str, email: str, password: str):
         "apikey": PUBLIC_KEY ,
         "Content-Type": "application/json"
     }
-    data = {
+    data_post = {
         "email": email,
         "password": password
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.post(url, headers=headers, json=data)
-
+        response = await client.post(url, headers=headers, json=data_post)
+        # print(f"This is the reponse from the post client email password: {response}", end='\n')
+        data = response.json()
         if response.status_code == 400:
             msg = "Email Already Taken!"
             return msg
         else:
             # check if username is taken
-            if await is_username_taken(username) is False:
-                data = response.json()
-                # print(data)
+            if await is_username_taken(username, data['access_token']) is False:
+                # data = response.json()
+                # print(f"Data submitted to username_registration_endpoint -> {data}", end='\n')
                 await username_registration_endpoint(
                     data["user"]["id"],
-                    username
+                    username,
+                    data['access_token']
                 )
 
                 return True
