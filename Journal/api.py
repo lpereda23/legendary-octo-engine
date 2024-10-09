@@ -32,9 +32,9 @@ async def user_login_endpoint(email: str, password: str) -> None:
         response = await client.post(
             url, headers=headers, json=data
         )
-        # print(f"This is response ----- {response.status_code}", end='\n')
+        print(f"This is response ----- {response.status_code}", end='\n')
         data = response.json()
-        # print(f"This is data print ----- {data}", end='\n')
+        print(f"This is data print ----- {data}", end='\n')
         # get the data we need
         access_token = data["access_token"]
         expires_in = data["expires_in"]
